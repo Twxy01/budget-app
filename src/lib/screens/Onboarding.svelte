@@ -147,41 +147,45 @@
     <!-- Personne ne devine le principe devant un champ vide : on l'explique d'abord. -->
     <section class="intro">
       <p class="pitch">
-        Cette app répond à une seule question : <strong>combien je peux encore dépenser ?</strong>
-      </p>
-      <p class="pitch small">
-        Ton solde bancaire ne le dit pas. Il contient encore le loyer, les courses de la semaine
-        prochaine et l'argent que tu voulais mettre de côté. Alors on découpe.
+        Un budget par <strong>enveloppes</strong> : tu répartis l'argent de ton mois par type de
+        dépense, et l'app t'indique en permanence ce qu'il te reste dans chacune.
       </p>
 
-      <h3>Les enveloppes</h3>
+      <h3>1. Tu crées tes enveloppes</h3>
       <p class="pitch small">
-        Tu répartis l'argent de ton mois dans des enveloppes — Courses, Sorties, Transport, ce que tu
-        veux — et chacune a un plafond que tu fixes. Quand tu dépenses, tu notes le montant dans
-        l'enveloppe correspondante, et elle se vide d'autant.
+        Une enveloppe par type de dépense — Courses, Sorties, Transport, ce que tu veux — avec un
+        plafond pour le mois que tu fixes toi-même.
+      </p>
+
+      <h3>2. Tu notes tes dépenses</h3>
+      <p class="pitch small">
+        À chaque achat, tu saisis le montant et l'enveloppe concernée. Ça prend trois secondes, et
+        l'enveloppe se vide d'autant.
       </p>
       <p class="example">
-        <strong>Sorties · 100 CHF ce mois</strong><br />
-        Tu paies 32 au bar, tu le notes.<br />
-        Il te reste <strong>68</strong>, et tu le sais avant de commander la tournée suivante.
+        <strong>Sorties · plafond 100</strong><br />
+        Dépense : 32 — bar<br />
+        Reste : <strong>68</strong>
       </p>
 
-      <h3>Le mois</h3>
+      <h3>3. Le mois recommence</h3>
       <p class="pitch small">
-        Le 1er, chaque enveloppe repart à son plafond. À la fin du mois, l'app fait le compte de ce
-        que tu n'as pas dépensé et te propose de le mettre de côté. Tu restes libre : elle ne touche
-        jamais à ton argent, elle te dit seulement où tu en es.
-      </p>
-      <p class="pitch small">
-        Pour les grosses dépenses prévues — des vacances, du matériel, des courses payées en une
-        fois — tu peux créer une <strong>cagnotte</strong> : elle accumule un montant chaque mois au
-        lieu de repartir à zéro.
+        Le 1er, chaque enveloppe repart à son plafond. L'app fait le compte de ce que tu n'as pas
+        dépensé et te propose de le mettre de côté sur ton épargne. C'est toi qui fais le virement :
+        l'app ne touche jamais à ton argent, elle reflète ce que tu fais.
       </p>
 
-      <h3>Avant de commencer</h3>
+      <h3>Les cagnottes</h3>
       <p class="pitch small">
-        Prépare les soldes de tes comptes et le montant de tes revenus mensuels. La configuration
-        prend 5 minutes, et tout reste modifiable ensuite.
+        Pour une dépense qui revient rarement mais coûte cher — vacances, matériel, achats groupés —
+        une cagnotte accumule un montant chaque mois au lieu de repartir à zéro. Tu vois ce que tu as
+        de côté et quand tu pourras acheter.
+      </p>
+
+      <h3>Ce qu'il te faut pour commencer</h3>
+      <p class="pitch small">
+        Les soldes de ton compte courant et de ton compte épargne, et le montant de tes revenus
+        mensuels. Compte 5 minutes ; tout reste modifiable ensuite.
       </p>
       <p class="pitch small warn">
         ⚠️ Tes données restent sur ce téléphone, et nulle part ailleurs : aucun compte, aucun serveur,
