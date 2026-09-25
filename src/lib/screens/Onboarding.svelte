@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { importBackup } from '../backup';
   import { db } from '../db';
   import { todayKey } from '../domain/dates';
   import { formatShort, parseAmount } from '../domain/money';
@@ -17,6 +18,24 @@
 
   let step = $state(0);
   let busy = $state(false);
+  let restoring = $state(false);
+
+  async function onRestore(event: Event) {
+    const input = event.currentTarget as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    restoring = true;
+    try {
+      await importBackup(file);
+      await store.reload();
+      toast.show('Sauvegarde restaurée');
+    } catch (error) {
+      toast.show(error instanceof Error ? error.message : 'Import impossible', 5000);
+    } finally {
+      restoring = false;
+    }
+  }
 
   // Étape 1 : soldes
   let currentRaw = $state('');
@@ -123,6 +142,12 @@
     <button class="next" disabled={currentCents === null || savingsCents === null} onclick={() => (step = 1)}>
       Continuer
     </button>
+
+    <!-- Changement de téléphone ou réinstallation : on repart d'un fichier de sauvegarde. -->
+    <label class="restore">
+      {restoring ? 'Restauration…' : 'J’ai déjà une sauvegarde'}
+      <input type="file" accept="application/json,.json" onchange={onRestore} />
+    </label>
   {:else if step === 1}
     <h2>Tes revenus du mois</h2>
     <p class="hint">Ils seront préremplis chaque mois, et tu les confirmeras d'une touche.</p>
@@ -280,6 +305,20 @@
     padding: 8px 0;
     color: var(--accent);
     font-weight: 600;
+  }
+
+  .restore {
+    display: block;
+    margin: 18px 0 40px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .restore input {
+    display: none;
   }
 
   .summary {
