@@ -263,9 +263,19 @@ describe('historique de l’épargne', () => {
       ],
     });
 
+    data.moves.push({
+      id: 'm4',
+      date: '2026-10-14',
+      type: 'transfer',
+      account: 'savings',
+      amountCents: 6800,
+      note: 'arrondis de septembre',
+    });
+
     const history = savingsHistory(data, '2026-10-20');
     // Le plus récent d'abord ; l'ajustement du compte courant n'y figure pas.
     expect(history.map((e) => [e.date, e.kind, e.amountCents])).toEqual([
+      ['2026-10-14', 'transfer', 6800],
       ['2026-10-13', 'deposit', 91845],
       ['2026-10-12', 'withdrawal', -10000],
       ['2026-10-10', 'pot', -47000],
@@ -297,18 +307,19 @@ describe('soldes des comptes', () => {
         { id: 'm1', date: '2026-10-12', type: 'withdrawal', account: 'savings', amountCents: 10000, note: '' },
         { id: 'm2', date: '2026-10-13', type: 'deposit', account: 'savings', amountCents: 91845, note: '13e' },
         { id: 'm3', date: '2026-10-14', type: 'adjustment', account: 'current', amountCents: -500, note: '' },
+        { id: 'm4', date: '2026-10-14', type: 'transfer', account: 'savings', amountCents: 6800, note: 'arrondis' },
       ],
     });
 
     const accounts = accountsView(data, '2026-10-15');
     // Ordre permanent d'octobre : 300 + 140 + 108 = 548
-    // Courant : 1'000 + 1'583.45 − 42 − 548 − 50 + 100 − 5
-    expect(accounts.currentCents).toBe(203845);
-    // Épargne : 2'000 + 548 + 50 + 918.45 − 100 − 50
-    expect(accounts.savingsAccountCents).toBe(336645);
+    // Courant : 1'000 + 1'583.45 − 42 − 548 − 50 − 68 (virement) + 100 − 5
+    expect(accounts.currentCents).toBe(203845 - 6800);
+    // Épargne : 2'000 + 548 + 50 + 68 (virement) + 918.45 − 100 − 50
+    expect(accounts.savingsAccountCents).toBe(336645 + 6800);
     // Réservé : Repas 140 − 50 = 90, Plaisirs 108
     expect(accounts.reservedCents).toBe(19800);
-    expect(accounts.freeSavingsCents).toBe(336645 - 19800);
+    expect(accounts.freeSavingsCents).toBe(336645 + 6800 - 19800);
   });
 
   it('le mois de départ, seuls les mouvements après le premier lancement comptent', () => {

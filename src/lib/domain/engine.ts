@@ -315,7 +315,14 @@ export function monthView(data: BudgetData, month: MonthKey): MonthView {
 
 // ─── Comptes ─────────────────────────────────────────────────────────────────
 
-export type SavingsEntryKind = 'standing' | 'close' | 'deposit' | 'withdrawal' | 'adjustment' | 'pot';
+export type SavingsEntryKind =
+  | 'standing'
+  | 'close'
+  | 'deposit'
+  | 'transfer'
+  | 'withdrawal'
+  | 'adjustment'
+  | 'pot';
 
 export interface SavingsEntry {
   date: DateKey;
@@ -325,6 +332,13 @@ export interface SavingsEntry {
   /** Signé : positif si l'épargne monte. */
   amountCents: Cents;
 }
+
+const MOVE_LABELS = {
+  deposit: 'Ajout à l’épargne',
+  transfer: 'Virement vers l’épargne',
+  withdrawal: 'Retrait',
+  adjustment: 'Ajustement',
+} as const;
 
 /**
  * Mouvements du compte épargne, du plus récent au plus ancien.
@@ -385,8 +399,7 @@ export function savingsHistory(data: BudgetData, today: DateKey): SavingsEntry[]
     entries.push({
       date: move.date,
       kind: move.type,
-      label:
-        move.type === 'deposit' ? 'Ajout à l’épargne' : move.type === 'withdrawal' ? 'Retrait' : 'Ajustement',
+      label: MOVE_LABELS[move.type],
       detail: move.note,
       amountCents: signed,
     });
@@ -425,13 +438,15 @@ export function accountsView(data: BudgetData, today: DateKey): AccountsView {
   const movesOf = (type: string, account?: string) =>
     sum(moves.filter((m) => m.type === type && (!account || m.account === account)).map((m) => m.amountCents));
   const withdrawals = movesOf('withdrawal');
+  // Un virement sort du courant et entre sur l'épargne ; un ajout vient de l'extérieur.
+  const transfers = movesOf('transfer');
 
   const currentCents =
-    settings.startCurrentCents + incomes - monthlySpent - standingOrders - saved + withdrawals +
+    settings.startCurrentCents + incomes - monthlySpent - standingOrders - saved - transfers + withdrawals +
     movesOf('adjustment', 'current');
 
   const savingsAccountCents =
-    settings.startSavingsCents + standingOrders + saved + movesOf('deposit') - withdrawals - potSpent +
+    settings.startSavingsCents + standingOrders + saved + transfers + movesOf('deposit') - withdrawals - potSpent +
     movesOf('adjustment', 'savings');
 
   const reservedCents = sum(

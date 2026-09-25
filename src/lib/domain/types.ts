@@ -74,13 +74,14 @@ export type Account = 'current' | 'savings';
 
 /**
  * - deposit : ajout à l'épargne venant de l'extérieur (13e salaire…) — épargne +
+ * - transfer : virement du courant vers l'épargne (arrondis, coup de pouce) — courant −, épargne +
  * - withdrawal : retrait d'épargne vers le courant — épargne −, courant +
  * - adjustment : correction après « Vérifier mon solde » — montant signé sur `account`
  */
 export interface AccountMove {
   id: string;
   date: DateKey;
-  type: 'deposit' | 'withdrawal' | 'adjustment';
+  type: 'deposit' | 'transfer' | 'withdrawal' | 'adjustment';
   account: Account;
   amountCents: Cents;
   note: string;
