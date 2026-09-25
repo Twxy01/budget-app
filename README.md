@@ -25,7 +25,8 @@ npm run preview
 En développement, l'écran d'accueil propose de charger des **données de démonstration**
 (`src/lib/demo.ts`, jamais incluse dans la version publiée).
 
-Les icônes se régénèrent avec `node scripts/generate-icons.mjs`.
+Les icônes sont générées à partir de `logo.png` (la tuile carrée y est détourée automatiquement) :
+`node scripts/generate-icons.mjs`.
 
 ## Mise en ligne
 
