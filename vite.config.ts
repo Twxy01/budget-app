@@ -5,8 +5,16 @@ import { VitePWA } from 'vite-plugin-pwa'
 // Sur GitHub Pages, le site vit dans un sous-dossier : BASE_PATH=/budget-app/ npm run build
 const base = process.env.BASE_PATH ?? '/'
 
+// Version affichée dans les réglages : date du build et commit déployé.
+const buildDate = new Date().toISOString().slice(0, 10)
+const commit = (process.env.GITHUB_SHA ?? '').slice(0, 7)
+
 export default defineConfig({
   base,
+  define: {
+    __BUILD_DATE__: JSON.stringify(buildDate),
+    __COMMIT__: JSON.stringify(commit),
+  },
   plugins: [
     svelte(),
     VitePWA({

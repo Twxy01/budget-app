@@ -24,6 +24,9 @@
 
   const amountOf = (id: string) => budgetAt(data, id, store.currentMonth)?.amountCents ?? 0;
 
+  // '2026-09-25' → '25.09.2026'
+  const version = __BUILD_DATE__.split('-').reverse().join('.');
+
   // ── Enveloppes archivées ─────────────────────────────────────────────────
   let confirmPurge = $state<string | null>(null);
 
@@ -273,6 +276,10 @@
     </div>
     <p class="hint left warn">L'import remplace toutes les données actuelles.</p>
   </div>
+
+  <p class="version num">
+    Version du {version}{#if __COMMIT__} · {__COMMIT__}{/if}
+  </p>
 </div>
 
 <style>
@@ -449,5 +456,12 @@
 
   .warn {
     color: var(--warn);
+  }
+
+  .version {
+    margin: 28px 0 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
   }
 </style>
