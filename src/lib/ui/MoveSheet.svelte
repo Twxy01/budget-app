@@ -13,15 +13,10 @@
   let raw = $state('');
   let note = $state('');
   let busy = $state(false);
-  /** D'où vient l'argent ajouté : de mon compte courant, ou de l'extérieur. */
-  let from = $state<'current' | 'outside'>('current');
 
   const amountCents = $derived(parseAmount(raw));
   const canSave = $derived(!!amountCents && !busy);
   const isDeposit = $derived(type === 'deposit');
-  const moveType = $derived(
-    type === 'withdrawal' ? 'withdrawal' : from === 'current' ? 'transfer' : 'deposit',
-  );
 
   function onkeydown(event: KeyboardEvent) {
     if (event.target instanceof HTMLInputElement) return;
@@ -36,7 +31,7 @@
     busy = true;
     await store.addMove({
       date: store.today,
-      type: moveType,
+      type,
       account: 'savings',
       amountCents,
       note: note.trim(),
@@ -68,19 +63,11 @@
     <span></span>
   </div>
 
-  {#if isDeposit}
-    <div class="from">
-      <button class:selected={from === 'current'} onclick={() => (from = 'current')}>De mon courant</button>
-      <button class:selected={from === 'outside'} onclick={() => (from = 'outside')}>De l'extérieur</button>
-    </div>
-    <p class="hint">
-      {from === 'current'
-        ? 'Virement de ton compte courant vers ton épargne : arrondis de carte, coup de pouce du mois…'
-        : 'Argent arrivé directement sur l’épargne, sans passer par le courant : 13e salaire, cadeau…'}
-    </p>
-  {:else}
-    <p class="hint">Argent que tu as repris sur ton compte épargne et qui revient sur ton compte courant.</p>
-  {/if}
+  <p class="hint">
+    {isDeposit
+      ? 'Argent arrivé sur ton épargne sans passer par tes enveloppes : arrondis de carte, 13e salaire, cadeau…'
+      : 'Argent que tu as repris sur ton compte épargne et qui revient sur ton compte courant.'}
+  </p>
 
   <AmountDisplay value={raw} />
 
@@ -143,26 +130,6 @@
     text-align: left;
     color: var(--accent);
     padding: 8px 0;
-  }
-
-  .from {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    margin-top: 8px;
-  }
-
-  .from button {
-    padding: 9px 14px;
-    border-radius: 999px;
-    background: var(--surface-2);
-    font-size: 15px;
-  }
-
-  .from button.selected {
-    background: var(--accent);
-    color: var(--accent-text);
-    font-weight: 600;
   }
 
   .hint {
