@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { dayNumber, monthLabel } from '../domain/dates';
-  import { accountsView, allocation, monthView, pendingCloses, standingOrderPlan, startMonth } from '../domain/engine';
+  import { monthLabel } from '../domain/dates';
+  import { accountsView, monthView, pendingCloses, standingOrderPlan } from '../domain/engine';
   import { formatShort } from '../domain/money';
   import { router } from '../router.svelte';
   import { store } from '../store.svelte';
@@ -15,7 +15,6 @@
   const view = $derived(monthView(data, store.month));
   const accounts = $derived(accountsView(data, store.today));
   const order = $derived(standingOrderPlan(data, store.currentMonth));
-  const plan = $derived(allocation(data, store.currentMonth));
   const isCurrent = $derived(store.month === store.currentMonth);
 
   // Bilan du mois le plus ancien non clôturé, que l'on peut repousser à plus tard.
@@ -54,21 +53,6 @@
       <p class="accounts num">
         Ordre permanent {formatShort(order.totalCents)} par mois
       </p>
-    {/if}
-    {#if store.month === startMonth(data)}
-      <p class="partial">
-        Mois partiel : l'app a démarré le {dayNumber(data.settings.startDate)}. Les enveloppes affichent leur plafond
-        entier, et ce mois n'aura pas de bilan.
-      </p>
-    {/if}
-    {#if isCurrent && plan.unassignedCents !== 0}
-      <button class="unassigned num" class:warning={plan.unassignedCents < 0} onclick={() => router.openSettings()}>
-        {#if plan.unassignedCents < 0}
-          ⚠️ {formatShort(-plan.unassignedCents)} CHF attribués en trop ›
-        {:else}
-          {formatShort(plan.unassignedCents)} CHF pas encore attribués ›
-        {/if}
-      </button>
     {/if}
   </section>
 
@@ -168,28 +152,6 @@
 
   button.accounts:active {
     color: var(--text);
-  }
-
-  .partial {
-    margin: 10px auto 0;
-    max-width: 320px;
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  .unassigned {
-    display: block;
-    margin: 12px auto 0;
-    padding: 7px 14px;
-    border-radius: 999px;
-    background: var(--surface);
-    box-shadow: var(--shadow);
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  .unassigned.warning {
-    color: var(--warn);
   }
 
   .list {

@@ -109,7 +109,7 @@
     <span class="icon-btn" aria-hidden="true"></span>
   </header>
 
-  <h2 class="section-title">Répartition de {monthLabel(store.currentMonth).toLowerCase()}</h2>
+  <h2 class="section-title">Répartition du mois</h2>
   <div class="card">
     <Allocation month={store.currentMonth} />
   </div>
