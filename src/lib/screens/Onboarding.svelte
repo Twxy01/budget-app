@@ -147,21 +147,46 @@
     <!-- Personne ne devine le principe devant un champ vide : on l'explique d'abord. -->
     <section class="intro">
       <p class="pitch">
-        Tu répartis l'argent du mois dans des <strong>enveloppes</strong>. Chaque dépense en retire.
-        Tu vois en permanence ce qu'il te reste.
+        Cette app répond à une seule question : <strong>combien je peux encore dépenser ?</strong>
       </p>
-      <ul class="points">
-        <li><strong>Un plafond par enveloppe</strong>, par exemple 100 pour les sorties.</li>
-        <li><strong>Tu notes chaque dépense</strong> en trois secondes, au moment où tu paies.</li>
-        <li><strong>En fin de mois</strong>, ce que tu n'as pas dépensé part à l'épargne, si tu le décides.</li>
-      </ul>
       <p class="pitch small">
-        La configuration prend 5 minutes : tes soldes, tes revenus, puis tes enveloppes. Tout reste
-        modifiable ensuite.
+        Ton solde bancaire ne le dit pas. Il contient encore le loyer, les courses de la semaine
+        prochaine et l'argent que tu voulais mettre de côté. Alors on découpe.
+      </p>
+
+      <h3>Les enveloppes</h3>
+      <p class="pitch small">
+        Tu répartis l'argent de ton mois dans des enveloppes — Courses, Sorties, Transport, ce que tu
+        veux — et chacune a un plafond que tu fixes. Quand tu dépenses, tu notes le montant dans
+        l'enveloppe correspondante, et elle se vide d'autant.
+      </p>
+      <p class="example">
+        <strong>Sorties · 100 CHF ce mois</strong><br />
+        Tu paies 32 au bar, tu le notes.<br />
+        Il te reste <strong>68</strong>, et tu le sais avant de commander la tournée suivante.
+      </p>
+
+      <h3>Le mois</h3>
+      <p class="pitch small">
+        Le 1er, chaque enveloppe repart à son plafond. À la fin du mois, l'app fait le compte de ce
+        que tu n'as pas dépensé et te propose de le mettre de côté. Tu restes libre : elle ne touche
+        jamais à ton argent, elle te dit seulement où tu en es.
+      </p>
+      <p class="pitch small">
+        Pour les grosses dépenses prévues — des vacances, du matériel, des courses payées en une
+        fois — tu peux créer une <strong>cagnotte</strong> : elle accumule un montant chaque mois au
+        lieu de repartir à zéro.
+      </p>
+
+      <h3>Avant de commencer</h3>
+      <p class="pitch small">
+        Prépare les soldes de tes comptes et le montant de tes revenus mensuels. La configuration
+        prend 5 minutes, et tout reste modifiable ensuite.
       </p>
       <p class="pitch small warn">
-        ⚠️ Tes données restent sur ce téléphone, et nulle part ailleurs. Aucun compte, aucun serveur.
-        Pense à les exporter de temps en temps, et sache que supprimer l'app les efface.
+        ⚠️ Tes données restent sur ce téléphone, et nulle part ailleurs : aucun compte, aucun serveur,
+        personne d'autre n'y a accès. En échange, rien n'est récupérable si tu supprimes l'app.
+        Exporte une sauvegarde de temps en temps depuis les réglages.
       </p>
       <button class="next" onclick={() => (step = 1)}>Commencer</button>
       <label class="restore">
@@ -377,19 +402,22 @@
     color: var(--warn);
   }
 
-  .points {
-    margin: 0 0 20px;
-    padding-left: 20px;
+  .intro h3 {
+    margin: 22px 0 6px;
     font-size: 15px;
-    color: var(--muted);
-    line-height: 1.5;
+    font-weight: 600;
   }
 
-  .points li {
-    margin-bottom: 8px;
+  .example {
+    margin: 14px 0 0;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-size: 15px;
+    line-height: 1.6;
   }
 
-  .points strong,
   .pitch strong {
     color: var(--text);
   }
