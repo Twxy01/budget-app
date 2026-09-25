@@ -135,7 +135,23 @@
   </ul>
   <button class="add" onclick={() => onedit()}>+ Nouvelle enveloppe</button>
   {#if archived.length}
-    <p class="hint">{archived.length} enveloppe(s) archivée(s) : leur historique est conservé.</p>
+    <h2 class="section-title">Archivées</h2>
+    <ul class="list card">
+      {#each archived as envelope (envelope.id)}
+        <li>
+          <button class="row" onclick={() => router.openEnvelope(envelope.id)}>
+            <span class="what">
+              <span>{envelope.name}</span>
+              <span class="detail">
+                {envelope.type === 'monthly' ? 'mensuelle' : 'cagnotte'} · archivée depuis {monthLabel(envelope.archivedFrom!).toLowerCase()}
+              </span>
+            </span>
+          </button>
+          <button class="restore" onclick={() => store.restoreEnvelope(envelope.id)}>Restaurer</button>
+        </li>
+      {/each}
+    </ul>
+    <p class="hint">Leurs dépenses restent dans l'historique des mois où elles étaient actives.</p>
   {/if}
 
   <h2 class="section-title">Revenus mensuels</h2>
@@ -313,6 +329,13 @@
   .edit .amount {
     flex: 0 0 110px;
     text-align: right;
+  }
+
+  .restore {
+    padding: 8px 10px;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 14px;
   }
 
   .remove {

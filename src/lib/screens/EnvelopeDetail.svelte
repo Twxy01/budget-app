@@ -18,11 +18,14 @@
 
   const forecast = $derived(pot ? potForecast(pot, contribution) : null);
 
-  // Une cagnotte ne reçoit qu'un gros achat de temps en temps : on montre tout son
-  // historique plutôt que le seul mois affiché, qui serait presque toujours vide.
+  const archived = $derived(envelope?.archivedFrom !== null);
+
+  // Une cagnotte ne reçoit qu'un gros achat de temps en temps, et une enveloppe archivée
+  // n'a plus de mois courant : on montre tout leur historique plutôt que le seul mois affiché.
+  const showAll = $derived(!!pot || archived);
   const expenses = $derived(
     data.expenses
-      .filter((x) => x.envelopeId === id && (pot || monthOf(x.date) === store.month))
+      .filter((x) => x.envelopeId === id && (showAll || monthOf(x.date) === store.month))
       .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt),
   );
 </script>
@@ -68,7 +71,11 @@
       {#if envelope.memo}<p class="memo">{envelope.memo}</p>{/if}
     </section>
 
-    <h2 class="section-title">{pot ? 'Achats' : `Dépenses · ${monthLabel(store.month)}`}</h2>
+    {#if archived}
+      <p class="archived">Enveloppe archivée depuis {monthLabel(envelope.archivedFrom!).toLowerCase()}.</p>
+    {/if}
+
+    <h2 class="section-title">{showAll ? 'Achats' : `Dépenses · ${monthLabel(store.month)}`}</h2>
     {#if expenses.length}
       <ul class="list card">
         {#each expenses as expense (expense.id)}
@@ -84,7 +91,7 @@
         {/each}
       </ul>
     {:else}
-      <p class="empty">{pot ? 'Aucun achat pour le moment.' : 'Aucune dépense ce mois-ci.'}</p>
+      <p class="empty">{showAll ? 'Aucun achat pour le moment.' : 'Aucune dépense ce mois-ci.'}</p>
     {/if}
   {/if}
 </div>
@@ -194,6 +201,13 @@
   .amount {
     font-weight: 600;
     white-space: nowrap;
+  }
+
+  .archived {
+    margin: 4px 0 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
   }
 
   .empty {

@@ -150,6 +150,12 @@ class Store {
     return used === 0 ? 'deleted' : 'archived';
   }
 
+  /** Remet une enveloppe archivée en service, à partir du mois en cours. */
+  async restoreEnvelope(id: string) {
+    await db.envelopes.update(id, { archivedFrom: null });
+    await this.reload();
+  }
+
   async reorderEnvelope(id: string, delta: number) {
     const list = [...(this.data?.envelopes ?? [])].sort((a, b) => a.order - b.order);
     const from = list.findIndex((e) => e.id === id);
