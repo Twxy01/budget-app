@@ -139,7 +139,7 @@
 
 <div class="screen">
   <header class="head">
-    <h1>Budget</h1>
+    <h1>Spendable</h1>
     {#if step > 0}<p class="steps">Étape {step} sur 3</p>{/if}
   </header>
 

@@ -21,9 +21,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Budget',
-        short_name: 'Budget',
-        description: 'Budget par enveloppes, hors ligne et sans compte.',
+        name: 'Spendable',
+        short_name: 'Spendable',
+        description: 'Spendable — budget par enveloppes, hors ligne et sans compte.',
         lang: 'fr-CH',
         start_url: base,
         scope: base,

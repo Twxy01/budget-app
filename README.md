@@ -1,4 +1,4 @@
-# Budget
+# Spendable
 
 Application personnelle de budget par enveloppes, pensée pour l'iPhone.
 **Plafond → dépenses → reste.** Tout est stocké sur le téléphone, sans compte, sans serveur et sans abonnement.
