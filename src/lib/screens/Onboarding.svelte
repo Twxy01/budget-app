@@ -147,20 +147,8 @@
     <!-- Personne ne devine le principe devant un champ vide : on l'explique d'abord. -->
     <section class="intro">
       <p class="pitch">
-        Un budget par <strong>enveloppes</strong> : tu répartis l'argent de ton mois par type de
-        dépense, et l'app t'indique en permanence ce qu'il te reste dans chacune.
-      </p>
-
-      <h3>1. Tu crées tes enveloppes</h3>
-      <p class="pitch small">
-        Une enveloppe par type de dépense — Courses, Sorties, Transport, ce que tu veux — avec un
-        plafond pour le mois que tu fixes toi-même.
-      </p>
-
-      <h3>2. Tu notes tes dépenses</h3>
-      <p class="pitch small">
-        À chaque achat, tu saisis le montant et l'enveloppe concernée. Ça prend trois secondes, et
-        l'enveloppe se vide d'autant.
+        Un budget par <strong>enveloppes</strong> : un plafond par type de dépense, et tu vois ce
+        qu'il te reste.
       </p>
       <p class="example">
         <strong>Sorties · plafond 100</strong><br />
@@ -168,31 +156,32 @@
         Reste : <strong>68</strong>
       </p>
 
-      <h3>3. Le mois recommence</h3>
-      <p class="pitch small">
-        Le 1er, chaque enveloppe repart à son plafond. L'app fait le compte de ce que tu n'as pas
-        dépensé et te propose de le mettre de côté sur ton épargne. C'est toi qui fais le virement :
-        l'app ne touche jamais à ton argent, elle reflète ce que tu fais.
-      </p>
+      <!-- Le détail est là pour qui le cherche, sans imposer un mur de texte à l'arrivée. -->
+      <details>
+        <summary>Comment ça marche</summary>
+        <p class="pitch small">
+          Tu crées une enveloppe par type de dépense, avec son plafond du mois. À chaque achat, tu
+          notes le montant et l'enveloppe : trois secondes.
+        </p>
+        <p class="pitch small">
+          Le 1er, tout repart au plafond, et l'app te propose de mettre de côté ce que tu n'as pas
+          dépensé. C'est toi qui fais le virement : l'app ne touche jamais à ton argent.
+        </p>
+        <p class="pitch small">
+          Pour ce qui revient rarement et coûte cher — vacances, matériel — une <strong>cagnotte</strong>
+          accumule un montant chaque mois au lieu de repartir à zéro.
+        </p>
+      </details>
 
-      <h3>Les cagnottes</h3>
       <p class="pitch small">
-        Pour une dépense qui revient rarement mais coûte cher — vacances, matériel, achats groupés —
-        une cagnotte accumule un montant chaque mois au lieu de repartir à zéro. Tu vois ce que tu as
-        de côté et quand tu pourras acheter.
-      </p>
-
-      <h3>Ce qu'il te faut pour commencer</h3>
-      <p class="pitch small">
-        Les soldes de ton compte courant et de ton compte épargne, et le montant de tes revenus
-        mensuels. Compte 5 minutes ; tout reste modifiable ensuite.
-      </p>
-      <p class="pitch small warn">
-        ⚠️ Tes données restent sur ce téléphone, et nulle part ailleurs : aucun compte, aucun serveur,
-        personne d'autre n'y a accès. En échange, rien n'est récupérable si tu supprimes l'app.
-        Exporte une sauvegarde de temps en temps depuis les réglages.
+        Prépare les soldes de tes comptes et tes revenus du mois. Environ 5 minutes, modifiable
+        ensuite.
       </p>
       <button class="next" onclick={() => (step = 1)}>Commencer</button>
+      <p class="pitch small warn">
+        ⚠️ Tes données restent sur ce téléphone : aucun compte, aucun serveur, et rien n'est
+        récupérable si tu supprimes l'app. Pense à exporter une sauvegarde de temps en temps.
+      </p>
       <label class="restore">
         {restoring ? 'Restauration…' : 'J’ai déjà une sauvegarde'}
         <input type="file" accept="application/json,.json" onchange={onRestore} />
@@ -406,10 +395,20 @@
     color: var(--warn);
   }
 
-  .intro h3 {
-    margin: 22px 0 6px;
+  details {
+    margin: 18px 0;
+  }
+
+  summary {
+    padding: 6px 0;
+    color: var(--accent);
     font-size: 15px;
     font-weight: 600;
+    cursor: pointer;
+  }
+
+  details p:first-of-type {
+    margin-top: 10px;
   }
 
   .example {
