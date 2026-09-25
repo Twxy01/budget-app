@@ -1,5 +1,7 @@
 <script lang="ts">
   import { exportBackup, importBackup } from '../backup';
+  import { monthLabel } from '../domain/dates';
+  import Allocation from '../ui/Allocation.svelte';
   import { accountsView, budgetAt, standingOrderPlan } from '../domain/engine';
   import { formatCents, formatShort, parseAmount } from '../domain/money';
   import type { Envelope } from '../domain/types';
@@ -106,6 +108,11 @@
     <h1 class="title">Réglages</h1>
     <span class="icon-btn" aria-hidden="true"></span>
   </header>
+
+  <h2 class="section-title">Répartition de {monthLabel(store.currentMonth).toLowerCase()}</h2>
+  <div class="card">
+    <Allocation month={store.currentMonth} />
+  </div>
 
   <h2 class="section-title">Enveloppes</h2>
   <ul class="list card">

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { dayNumber, monthLabel } from '../domain/dates';
-  import { accountsView, monthView, pendingCloses, standingOrderPlan, startMonth } from '../domain/engine';
+  import { accountsView, allocation, monthView, pendingCloses, standingOrderPlan, startMonth } from '../domain/engine';
   import { formatShort } from '../domain/money';
   import { router } from '../router.svelte';
   import { store } from '../store.svelte';
@@ -14,7 +14,8 @@
   const data = $derived(store.data!);
   const view = $derived(monthView(data, store.month));
   const accounts = $derived(accountsView(data, store.today));
-  const plan = $derived(standingOrderPlan(data, store.currentMonth));
+  const order = $derived(standingOrderPlan(data, store.currentMonth));
+  const plan = $derived(allocation(data, store.currentMonth));
   const isCurrent = $derived(store.month === store.currentMonth);
 
   // Bilan du mois le plus ancien non clôturé, que l'on peut repousser à plus tard.
@@ -51,7 +52,7 @@
         Courant {formatShort(accounts.currentCents)} · Épargne {formatShort(accounts.freeSavingsCents)} ›
       </button>
       <p class="accounts num">
-        Ordre permanent {formatShort(plan.totalCents)} par mois
+        Ordre permanent {formatShort(order.totalCents)} par mois
       </p>
     {/if}
     {#if store.month === startMonth(data)}
@@ -60,10 +61,14 @@
         entier, et ce mois n'aura pas de bilan.
       </p>
     {/if}
-    {#if view.unassignedCents < 0}
-      <p class="warning num">
-        ⚠️ Tu as attribué {formatShort(-view.unassignedCents)} CHF de plus que tes revenus ce mois-ci
-      </p>
+    {#if isCurrent && plan.unassignedCents !== 0}
+      <button class="unassigned num" class:warning={plan.unassignedCents < 0} onclick={() => router.openSettings()}>
+        {#if plan.unassignedCents < 0}
+          ⚠️ {formatShort(-plan.unassignedCents)} CHF attribués en trop ›
+        {:else}
+          {formatShort(plan.unassignedCents)} CHF pas encore attribués ›
+        {/if}
+      </button>
     {/if}
   </section>
 
@@ -172,14 +177,18 @@
     color: var(--muted);
   }
 
-  .warning {
-    margin: 10px auto 0;
-    max-width: 320px;
-    padding: 8px 12px;
-    border-radius: 12px;
+  .unassigned {
+    display: block;
+    margin: 12px auto 0;
+    padding: 7px 14px;
+    border-radius: 999px;
     background: var(--surface);
     box-shadow: var(--shadow);
     font-size: 13px;
+    color: var(--muted);
+  }
+
+  .unassigned.warning {
     color: var(--warn);
   }
 

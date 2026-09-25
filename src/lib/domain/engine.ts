@@ -206,6 +206,42 @@ export function incomesPending(data: BudgetData, month: MonthKey): boolean {
   return month > startMonth(data) && !data.incomes.some((i) => i.month === month);
 }
 
+/** Revenus confirmés du mois, ou à défaut ceux prévus par le modèle mensuel. */
+export function plannedIncomeAt(data: BudgetData, month: MonthKey): Cents {
+  if (data.incomes.some((i) => i.month === month)) return incomesAt(data, month);
+  return sum(data.incomeTemplates.map((t) => t.amountCents));
+}
+
+export interface Allocation {
+  incomeCents: Cents;
+  /** Somme des plafonds des enveloppes mensuelles. */
+  monthlyCents: Cents;
+  /** Somme des contributions aux cagnottes. */
+  potsCents: Cents;
+  fixedSavingsCents: Cents;
+  /** Ce qui n'est attribué nulle part ; négatif si le budget dépasse les revenus. */
+  unassignedCents: Cents;
+}
+
+/** Répartition des revenus du mois, pour la vue d'ensemble. */
+export function allocation(data: BudgetData, month: MonthKey): Allocation {
+  const incomeCents = plannedIncomeAt(data, month);
+  const monthlyCents = sum(
+    activeEnvelopes(data, month, 'monthly').map((e) => budgetAt(data, e.id, month)!.amountCents),
+  );
+  const potsCents = sum(
+    activeEnvelopes(data, month, 'pot').map((e) => budgetAt(data, e.id, month)!.amountCents),
+  );
+  const fixedSavingsCents = fixedSavingsAt(data, month);
+  return {
+    incomeCents,
+    monthlyCents,
+    potsCents,
+    fixedSavingsCents,
+    unassignedCents: incomeCents - monthlyCents - potsCents - fixedSavingsCents,
+  };
+}
+
 /**
  * Argent qui n'est dans aucune enveloppe : revenus − plafonds − ordre permanent.
  * Vaut 0 tant que les revenus du mois ne sont pas confirmés.

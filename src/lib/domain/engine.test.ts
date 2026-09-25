@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   accountsView,
+  allocation,
   monthView,
   pendingCloses,
   potForecast,
@@ -165,6 +166,35 @@ describe('ordre permanent', () => {
     const data = makeData();
     expect(standingOrderPlan(data, '2026-09').totalCents).toBe(54800);
     expect(standingOrderAt(data, '2026-09')).toBe(0);
+  });
+});
+
+describe('répartition des revenus', () => {
+  it('découpe les revenus en mensuelles, cagnottes, épargne fixe et non attribué', () => {
+    expect(allocation(makeData({ incomes: octIncomes }), '2026-10')).toEqual({
+      incomeCents: 158345,
+      monthlyCents: 103500,
+      potsCents: 24800,
+      fixedSavingsCents: 30000,
+      unassignedCents: 45,
+    });
+  });
+
+  it('utilise le modèle de revenus tant que le mois n’est pas confirmé', () => {
+    const data = makeData({
+      incomeTemplates: [{ id: 't1', name: 'Salaire', amountCents: 158345, order: 0 }],
+    });
+    expect(allocation(data, '2026-10').incomeCents).toBe(158345);
+    // Une fois le mois confirmé, ce sont les montants réels qui comptent.
+    data.incomes = [{ id: 'i', month: '2026-10', name: 'Salaire', amountCents: 130000 }];
+    expect(allocation(data, '2026-10').incomeCents).toBe(130000);
+  });
+
+  it('signale un budget qui dépasse les revenus', () => {
+    const data = makeData({
+      incomeTemplates: [{ id: 't1', name: 'Salaire', amountCents: 130000, order: 0 }],
+    });
+    expect(allocation(data, '2026-10').unassignedCents).toBe(130000 - 103500 - 24800 - 30000);
   });
 });
 
