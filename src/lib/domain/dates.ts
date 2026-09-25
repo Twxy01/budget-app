@@ -46,6 +46,12 @@ export function dayLabel(date: DateKey, today: DateKey): string {
   return day.toLocaleDateString('fr-CH', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
+/** '2026-09-25' → '25 septembre' */
+export function dayNumber(date: DateKey): string {
+  const [y, m, d] = date.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('fr-CH', { day: 'numeric', month: 'long' });
+}
+
 /** 'Septembre 2026' */
 export function monthLabel(month: MonthKey): string {
   const [y, m] = month.split('-').map(Number);

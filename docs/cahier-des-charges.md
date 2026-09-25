@@ -189,7 +189,7 @@ Assistant en 3 étapes :
 
 Tous les montants sont stockés en **centimes (entiers)** pour éviter les erreurs d'arrondi.
 
-**Mois de départ** (celui du premier lancement) : pas de revenus à confirmer ni d'ordre permanent, puisque les soldes saisis ce jour-là en tiennent déjà compte. Une dépense datée d'avant le premier lancement compte dans son enveloppe, mais pas dans les soldes des comptes.
+**Mois de départ** (celui du premier lancement) : pas de revenus à confirmer ni d'ordre permanent, puisque les soldes saisis ce jour-là en tiennent déjà compte. Une dépense datée d'avant le premier lancement compte dans son enveloppe, mais pas dans les soldes des comptes. **Ce mois n'a pas de bilan** : ses enveloppes affichent un plafond entier alors qu'il est déjà entamé, donc ses « restes » ne correspondent à aucun argent disponible. L'accueil l'annonce (« mois partiel »).
 
 - **Reste d'une mensuelle (mois M)** = plafond(M) − dépenses(M).
 - **Disponible ce mois** = Σ restes des mensuelles(M).

@@ -230,12 +230,16 @@ export function closeAt(data: BudgetData, month: MonthKey): MonthClose | null {
   return data.closes.find((c) => c.month === month) ?? null;
 }
 
-/** Mois terminés dont le bilan n'a pas encore été fait, du plus ancien au plus récent. */
+/**
+ * Mois terminés dont le bilan n'a pas encore été fait, du plus ancien au plus récent.
+ * Le mois de départ est exclu : il est incomplet (ni revenus confirmés, ni ordre permanent),
+ * donc ses « restes » ne correspondent à aucun argent réellement disponible.
+ */
 export function pendingCloses(data: BudgetData, today: DateKey): MonthKey[] {
   const lastFinished = addMonths(monthOf(today), -1);
-  const first = startMonth(data);
-  if (lastFinished < first) return [];
-  return monthRange(first, lastFinished).filter((m) => !closeAt(data, m));
+  const firstClosable = addMonths(startMonth(data), 1);
+  if (lastFinished < firstClosable) return [];
+  return monthRange(firstClosable, lastFinished).filter((m) => !closeAt(data, m));
 }
 
 export interface MonthView {

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { monthLabel } from '../domain/dates';
-  import { accountsView, monthView, pendingCloses, standingOrderPlan } from '../domain/engine';
+  import { dayNumber, monthLabel } from '../domain/dates';
+  import { accountsView, monthView, pendingCloses, standingOrderPlan, startMonth } from '../domain/engine';
   import { formatShort } from '../domain/money';
   import { router } from '../router.svelte';
   import { store } from '../store.svelte';
@@ -52,6 +52,12 @@
       </button>
       <p class="accounts num">
         Ordre permanent {formatShort(plan.totalCents)} par mois
+      </p>
+    {/if}
+    {#if store.month === startMonth(data)}
+      <p class="partial">
+        Mois partiel : l'app a démarré le {dayNumber(data.settings.startDate)}. Les enveloppes affichent leur plafond
+        entier, et ce mois n'aura pas de bilan.
       </p>
     {/if}
     {#if view.unassignedCents < 0}
@@ -157,6 +163,13 @@
 
   button.accounts:active {
     color: var(--text);
+  }
+
+  .partial {
+    margin: 10px auto 0;
+    max-width: 320px;
+    font-size: 13px;
+    color: var(--muted);
   }
 
   .warning {

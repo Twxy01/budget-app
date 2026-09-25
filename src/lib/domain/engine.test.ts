@@ -200,9 +200,14 @@ describe('bilan de fin de mois', () => {
   it('liste les bilans en attente, du plus ancien au plus récent', () => {
     const data = makeData();
     expect(pendingCloses(data, '2026-09-30')).toEqual([]);
-    expect(pendingCloses(data, '2026-11-02')).toEqual(['2026-09', '2026-10']);
-    data.closes.push({ month: '2026-09', status: 'skipped', proposedCents: 0, savedCents: 0, date: '2026-10-01' });
-    expect(pendingCloses(data, '2026-11-02')).toEqual(['2026-10']);
+    expect(pendingCloses(data, '2026-12-02')).toEqual(['2026-10', '2026-11']);
+    data.closes.push({ month: '2026-10', status: 'skipped', proposedCents: 0, savedCents: 0, date: '2026-11-01' });
+    expect(pendingCloses(data, '2026-12-02')).toEqual(['2026-11']);
+  });
+
+  it('ne propose jamais de bilan pour le mois de départ, qui est incomplet', () => {
+    // Démarrage le 21 septembre : septembre n'a ni revenus confirmés ni ordre permanent.
+    expect(pendingCloses(makeData(), '2026-10-01')).toEqual([]);
   });
 
   it('signale un écart si un mois déjà clôturé est corrigé', () => {
