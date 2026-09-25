@@ -1,6 +1,6 @@
 <script lang="ts">
   import { monthLabel } from '../domain/dates';
-  import { accountsView, monthView, pendingCloses, standingOrderPlan } from '../domain/engine';
+  import { accountsView, allocation, monthView, pendingCloses, standingOrderPlan } from '../domain/engine';
   import { formatShort } from '../domain/money';
   import { router } from '../router.svelte';
   import { store } from '../store.svelte';
@@ -15,6 +15,7 @@
   const view = $derived(monthView(data, store.month));
   const accounts = $derived(accountsView(data, store.today));
   const order = $derived(standingOrderPlan(data, store.currentMonth));
+  const plan = $derived(allocation(data, store.currentMonth));
   const isCurrent = $derived(store.month === store.currentMonth);
 
   // Bilan du mois le plus ancien non clôturé, que l'on peut repousser à plus tard.
@@ -53,6 +54,12 @@
       <p class="accounts num">
         Ordre permanent {formatShort(order.totalCents)} par mois
       </p>
+      <!-- Seulement quand le budget dépasse les revenus : sinon l'info vit dans la répartition. -->
+      {#if plan.unassignedCents < 0}
+        <button class="warning num" onclick={() => router.openSettings()}>
+          ⚠️ {formatShort(-plan.unassignedCents)} CHF attribués de plus que tes revenus ›
+        </button>
+      {/if}
     {/if}
   </section>
 
@@ -152,6 +159,17 @@
 
   button.accounts:active {
     color: var(--text);
+  }
+
+  .warning {
+    display: block;
+    margin: 12px auto 0;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-size: 13px;
+    color: var(--warn);
   }
 
   .list {
