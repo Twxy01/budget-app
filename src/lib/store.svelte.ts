@@ -150,6 +150,20 @@ class Store {
     return used === 0 ? 'deleted' : 'archived';
   }
 
+  /** Supprime définitivement une enveloppe **et ses dépenses** : les mois passés changent. */
+  async purgeEnvelope(id: string) {
+    await db.transaction('rw', [db.envelopes, db.budgets, db.expenses], async () => {
+      const [budgets, expenses] = await Promise.all([
+        db.budgets.where('envelopeId').equals(id).toArray(),
+        db.expenses.where('envelopeId').equals(id).toArray(),
+      ]);
+      await db.expenses.bulkDelete(expenses.map((x) => x.id));
+      await db.budgets.bulkDelete(budgets.map((b) => b.id!));
+      await db.envelopes.delete(id);
+    });
+    await this.reload();
+  }
+
   /** Remet une enveloppe archivée en service, à partir du mois en cours. */
   async restoreEnvelope(id: string) {
     await db.envelopes.update(id, { archivedFrom: null });

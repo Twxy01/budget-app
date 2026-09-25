@@ -24,6 +24,20 @@
 
   const amountOf = (id: string) => budgetAt(data, id, store.currentMonth)?.amountCents ?? 0;
 
+  // ── Enveloppes archivées ─────────────────────────────────────────────────
+  let confirmPurge = $state<string | null>(null);
+
+  async function purge(id: string) {
+    if (confirmPurge !== id) {
+      confirmPurge = id;
+      return;
+    }
+    const count = data.expenses.filter((x) => x.envelopeId === id).length;
+    await store.purgeEnvelope(id);
+    confirmPurge = null;
+    toast.show(count > 0 ? `Enveloppe et ${count} dépense(s) supprimées` : 'Enveloppe supprimée');
+  }
+
   // ── Épargne fixe ─────────────────────────────────────────────────────────
   let fixedRaw = $state<string | null>(null);
   const fixedValue = $derived(fixedRaw ?? plain(plan.fixedSavingsCents));
@@ -148,10 +162,15 @@
             </span>
           </button>
           <button class="restore" onclick={() => store.restoreEnvelope(envelope.id)}>Restaurer</button>
+          <button class="purge" class:armed={confirmPurge === envelope.id} onclick={() => purge(envelope.id)}>
+            {confirmPurge === envelope.id ? 'Confirmer' : 'Supprimer'}
+          </button>
         </li>
       {/each}
     </ul>
-    <p class="hint">Leurs dépenses restent dans l'historique des mois où elles étaient actives.</p>
+    <p class="hint">
+      Supprimer efface aussi les dépenses de l'enveloppe : les totaux des mois concernés changeront.
+    </p>
   {/if}
 
   <h2 class="section-title">Revenus mensuels</h2>
@@ -331,11 +350,25 @@
     text-align: right;
   }
 
-  .restore {
+  .restore,
+  .purge {
     padding: 8px 10px;
-    color: var(--accent);
     font-weight: 600;
     font-size: 14px;
+  }
+
+  .restore {
+    color: var(--accent);
+  }
+
+  .purge {
+    color: var(--danger);
+  }
+
+  .purge.armed {
+    border-radius: 10px;
+    background: var(--danger);
+    color: #fff;
   }
 
   .remove {
