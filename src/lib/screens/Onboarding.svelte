@@ -55,8 +55,26 @@
 
   // Étape 3 : enveloppes
   let drafts = $state<Draft[]>([newDraft()]);
-  function newDraft(): Draft {
-    return { key: newId(), name: '', type: 'monthly', amount: '', max: '', start: '' };
+  function newDraft(name = ''): Draft {
+    return { key: newId(), name, type: 'monthly', amount: '', max: '', start: '' };
+  }
+
+  /** Noms courants, pour éviter l'écran vide au moment le plus difficile. */
+  const SUGGESTIONS = [
+    'Courses',
+    'Transport',
+    'Sorties',
+    'Loisirs',
+    'Abonnements',
+    'Santé',
+    'Vêtements',
+    'Imprévus',
+  ];
+
+  function addSuggestion(name: string) {
+    const empty = drafts.find((d) => !d.name.trim());
+    if (empty) empty.name = name;
+    else drafts = [...drafts, newDraft(name)];
   }
   const envelopeLines = $derived(
     drafts
@@ -122,10 +140,36 @@
 <div class="screen">
   <header class="head">
     <h1>Budget</h1>
-    <p class="steps">Étape {step + 1} sur 3</p>
+    {#if step > 0}<p class="steps">Étape {step} sur 3</p>{/if}
   </header>
 
   {#if step === 0}
+    <!-- Personne ne devine le principe devant un champ vide : on l'explique d'abord. -->
+    <section class="intro">
+      <p class="pitch">
+        Tu répartis l'argent du mois dans des <strong>enveloppes</strong>. Chaque dépense en retire.
+        Tu vois en permanence ce qu'il te reste.
+      </p>
+      <ul class="points">
+        <li><strong>Un plafond par enveloppe</strong>, par exemple 100 pour les sorties.</li>
+        <li><strong>Tu notes chaque dépense</strong> en trois secondes, au moment où tu paies.</li>
+        <li><strong>En fin de mois</strong>, ce que tu n'as pas dépensé part à l'épargne, si tu le décides.</li>
+      </ul>
+      <p class="pitch small">
+        La configuration prend 5 minutes : tes soldes, tes revenus, puis tes enveloppes. Tout reste
+        modifiable ensuite.
+      </p>
+      <p class="pitch small warn">
+        ⚠️ Tes données restent sur ce téléphone, et nulle part ailleurs. Aucun compte, aucun serveur.
+        Pense à les exporter de temps en temps, et sache que supprimer l'app les efface.
+      </p>
+      <button class="next" onclick={() => (step = 1)}>Commencer</button>
+      <label class="restore">
+        {restoring ? 'Restauration…' : 'J’ai déjà une sauvegarde'}
+        <input type="file" accept="application/json,.json" onchange={onRestore} />
+      </label>
+    </section>
+  {:else if step === 1}
     <h2>Tes comptes aujourd'hui</h2>
     <p class="hint">
       Entre les soldes affichés par ta banque en ce moment. L'app part de ces chiffres et suit ensuite
@@ -139,18 +183,18 @@
       Compte épargne
       <input type="text" inputmode="decimal" placeholder="0" bind:value={savingsRaw} />
     </label>
-    <button class="next" disabled={currentCents === null || savingsCents === null} onclick={() => (step = 1)}>
-      Continuer
-    </button>
-
-    <!-- Changement de téléphone ou réinstallation : on repart d'un fichier de sauvegarde. -->
-    <label class="restore">
-      {restoring ? 'Restauration…' : 'J’ai déjà une sauvegarde'}
-      <input type="file" accept="application/json,.json" onchange={onRestore} />
-    </label>
-  {:else if step === 1}
+    <div class="nav">
+      <button class="link" onclick={() => (step = 0)}>Retour</button>
+      <button class="next" disabled={currentCents === null || savingsCents === null} onclick={() => (step = 2)}>
+        Continuer
+      </button>
+    </div>
+  {:else if step === 2}
     <h2>Tes revenus du mois</h2>
-    <p class="hint">Ils seront préremplis chaque mois, et tu les confirmeras d'une touche.</p>
+    <p class="hint">
+      Tout ce qui arrive sur ton compte chaque mois : salaire, aide, bourse… Ils seront préremplis
+      chaque mois et tu les confirmeras d'une touche.
+    </p>
     {#each incomes as income (income.key)}
       <div class="row">
         <input type="text" placeholder="Salaire" bind:value={income.name} />
@@ -169,17 +213,24 @@
     </label>
 
     <div class="nav">
-      <button class="link" onclick={() => (step = 0)}>Retour</button>
-      <button class="next" disabled={incomeLines.length === 0 || fixedCents === null} onclick={() => (step = 2)}>
+      <button class="link" onclick={() => (step = 1)}>Retour</button>
+      <button class="next" disabled={incomeLines.length === 0 || fixedCents === null} onclick={() => (step = 3)}>
         Continuer
       </button>
     </div>
   {:else}
     <h2>Tes enveloppes</h2>
     <p class="hint">
-      <strong>Mensuelle</strong> : repart à zéro chaque mois, l'argent reste sur le courant.
+      Commence par 4 ou 5, tu en ajouteras d'autres plus tard.
+      <strong>Mensuelle</strong> : repart à son plafond chaque mois, l'argent reste sur le courant.
       <strong>Cagnotte</strong> : accumule pour un achat futur, l'argent va sur l'épargne.
     </p>
+
+    <div class="suggestions">
+      {#each SUGGESTIONS.filter((s) => !drafts.some((d) => d.name === s)) as suggestion (suggestion)}
+        <button onclick={() => addSuggestion(suggestion)}>+ {suggestion}</button>
+      {/each}
+    </div>
 
     {#each drafts as draft (draft.key)}
       <div class="draft">
@@ -208,7 +259,7 @@
     </div>
 
     <div class="nav">
-      <button class="link" onclick={() => (step = 1)}>Retour</button>
+      <button class="link" onclick={() => (step = 2)}>Retour</button>
       <button class="next" disabled={envelopeLines.length === 0 || busy} onclick={finish}>C'est parti</button>
     </div>
   {/if}
@@ -305,6 +356,56 @@
     padding: 8px 0;
     color: var(--accent);
     font-weight: 600;
+  }
+
+  .intro {
+    padding-top: 12px;
+  }
+
+  .pitch {
+    margin: 0 0 16px;
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .pitch.small {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .pitch.warn {
+    color: var(--warn);
+  }
+
+  .points {
+    margin: 0 0 20px;
+    padding-left: 20px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .points li {
+    margin-bottom: 8px;
+  }
+
+  .points strong,
+  .pitch strong {
+    color: var(--text);
+  }
+
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .suggestions button {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    font-size: 14px;
   }
 
   .restore {
